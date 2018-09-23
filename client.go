@@ -171,6 +171,24 @@ func (c *Client) download(path string, in interface{}, r io.Reader) (io.ReadClos
 	return c.do(req)
 }
 
+func (c *Client) pipe(path string, in interface{}, filter func(r http.Header)) (*http.Response, error) {
+	url := "https://content.dropboxapi.com/2" + path
+	body, err := json.Marshal(in)
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest("POST", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", "Bearer "+c.AccessToken)
+	req.Header.Set("Dropbox-API-Arg", string(body))
+	if filter != nil {
+		filter(req.Header)
+	}
+	return c.HTTPClient.Do(req)
+}
+
 func (c *Client) do(req *http.Request) (io.ReadCloser, int64, error) {
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {
@@ -298,4 +316,9 @@ func (c *Client) Read(name string) ([]byte, error) {
 	f := c.Open(name)
 	defer f.Close()
 	return ioutil.ReadAll(f)
+}
+
+// GetStream return http response
+func (c *Client) GetStream(name string, reqFilter func(r http.Header)) (*http.Response, error) {
+	return c.Files.Stream(&DownloadInput{name}, reqFilter)
 }

@@ -3,6 +3,7 @@ package dropbox
 import (
 	"encoding/json"
 	"io"
+	"net/http"
 	"time"
 )
 
@@ -192,6 +193,11 @@ func (c *Files) Upload(in *UploadInput) (out *UploadOutput, err error) {
 	defer body.Close()
 	err = json.NewDecoder(body).Decode(&out)
 	return
+}
+
+// Stream get download stream
+func (c *Files) Stream(in *DownloadInput, reqFilter func(r http.Header)) (*http.Response, error) {
+	return c.pipe("/files/download", in, reqFilter)
 }
 
 func normalizePath(s string) string {
