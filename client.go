@@ -142,7 +142,7 @@ func (c *Client) call(path string, in interface{}) (io.ReadCloser, error) {
 	if err != nil {
 		return nil, err
 	}
-	req, err := http.NewRequest("POST", url, bytes.NewReader(body))
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +159,7 @@ func (c *Client) download(path string, in interface{}, r io.Reader) (io.ReadClos
 	if err != nil {
 		return nil, 0, err
 	}
-	req, err := http.NewRequest("POST", url, r)
+	req, err := http.NewRequest(http.MethodPost, url, r)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -177,7 +177,7 @@ func (c *Client) pipe(path string, in interface{}, filter func(r http.Header)) (
 	if err != nil {
 		return nil, err
 	}
-	req, err := http.NewRequest("POST", url, nil)
+	req, err := http.NewRequest(http.MethodPost, url, nil)
 	if err != nil {
 		return nil, err
 	}
