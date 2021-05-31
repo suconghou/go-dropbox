@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -204,7 +203,7 @@ func (c *Client) do(req *http.Request) (io.ReadCloser, int64, error) {
 	}
 	kind := res.Header.Get("Content-Type")
 	if strings.Contains(kind, "text/plain") {
-		if b, err := ioutil.ReadAll(res.Body); err == nil {
+		if b, err := io.ReadAll(res.Body); err == nil {
 			e.Summary = string(b)
 			return nil, 0, e
 		}
@@ -315,7 +314,7 @@ func (c *Client) Open(name string) *File {
 func (c *Client) Read(name string) ([]byte, error) {
 	f := c.Open(name)
 	defer f.Close()
-	return ioutil.ReadAll(f)
+	return io.ReadAll(f)
 }
 
 // GetStream return http response
